@@ -174,6 +174,13 @@ createRestaurantHTML = (restaurant) => {
     more.href = DBHelper.urlForRestaurant(restaurant);
     li.append(more);
 
+    const favorite = document.createElement('i');
+    favorite.setAttribute('role', 'checkbox');
+    favorite.setAttribute('aria-checked', 'false');
+    favorite.setAttribute('aria-label', `Is this restaurant your favorite?`);
+    favorite.className = "far fa-heart fav-btn";
+    li.append(favorite);
+
     return li;
 };
 

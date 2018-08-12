@@ -21,7 +21,10 @@ self.addEventListener('install', function (event) {
                 'https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png',
                 'https://unpkg.com/leaflet@1.3.1/dist/images/marker-shadow.png',
                 '/img/icons-512.png',
-                '/img/icons-192.png'
+                '/img/icons-192.png',
+                'https://use.fontawesome.com/releases/v5.2.0/css/solid.css',
+                'https://use.fontawesome.com/releases/v5.2.0/css/regular.css',
+                'https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css'
             ]);
 
             // cache critical resources

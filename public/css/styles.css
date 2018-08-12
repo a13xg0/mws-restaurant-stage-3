@@ -388,6 +388,15 @@ footer {
     display: none;
 }
 
+.fav-btn {
+    float: right;
+    line-height: 40px;
+    font-size: 18pt;
+    margin: 15px;
+    color: darkred;
+    cursor: pointer;
+}
+
 /*
   Layout management
  */
