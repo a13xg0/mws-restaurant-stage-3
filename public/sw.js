@@ -109,7 +109,7 @@ function serveMapTiles(request) {
                     })
                 }
                 finally {
-                    return response
+                    return response;
                 }
             }
 

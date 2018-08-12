@@ -9,7 +9,7 @@ class DBHelper {
      */
     static get DATABASE_URL() {
         const port = 1337; // Change this to your server port
-        return `http://localhost:${port}/restaurants`;
+        return `http://localhost:${port}`;
     }
 
     /**
@@ -36,7 +36,7 @@ class DBHelper {
      * Fetch all restaurants.
      */
     static fetchRestaurants(callback) {
-        fetch(DBHelper.DATABASE_URL)
+        fetch(`${DBHelper.DATABASE_URL}/restaurants`)
             .then((resp) => {
                 return resp.json();
              })
@@ -71,7 +71,7 @@ class DBHelper {
      * Fetch a restaurant by its ID.
      */
     static fetchRestaurantById(id, callback) {
-        fetch(`${DBHelper.DATABASE_URL}?id=${id}`)
+        fetch(`${DBHelper.DATABASE_URL}/restaurants?id=${id}`)
             .then((resp) => {
                 if (resp.status === 404) {
                     callback('Restaurant does not exist', null);
@@ -260,7 +260,7 @@ class DBHelper {
 
     static saveFavoriteMark(restaurantId, isFavorite) {
         fetch(
-            `${DBHelper.DATABASE_URL}/${restaurantId}/?is_favorite=${isFavorite}`,
+            `${DBHelper.DATABASE_URL}/restaurants/${restaurantId}/?is_favorite=${isFavorite}`,
             {
                 method: 'PUT'
             }
@@ -283,6 +283,31 @@ class DBHelper {
         else {
             marker.className = "far fa-heart fav-btn";
         }
+    }
+
+    static loadReviews(restaurantId, restaurantName, container, reviewList) {
+        fetch(
+            `${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${restaurantId}`
+        )
+        .then((response) => {
+            return response.json();
+            })
+        .then((reviews) => {
+            if (reviews && reviews.length > 0) {
+                container.innerHTML = '';
+
+                reviews.forEach(review => {
+                    reviewList.appendChild(createReviewHTML(review, restaurantName));
+                });
+
+                container.appendChild(reviewList);
+            }
+            else {
+                const noReviews = document.createElement('p');
+                noReviews.innerHTML = 'No reviews yet!';
+                container.appendChild(noReviews);
+            }
+        })
     }
 }
 
