@@ -80,6 +80,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     const cuisineDescr = document.getElementById('restaurant-cuisine-description');
     cuisineDescr.innerHTML = `This restaurant provides ${restaurant.cuisine_type} cuisine`;
 
+    const favorite = document.getElementById('restaurant-favorite');
+    favorite.onclick = favorite.onkeypress = function() { DBHelper.setFavoriteMark(restaurant, favorite); event.stopPropagation();};
+    DBHelper.constructFavoriteMark(favorite, restaurant.is_favorite);
+
     // fill operating hours
     if (restaurant.operating_hours) {
         fillRestaurantHoursHTML();

@@ -242,5 +242,47 @@ class DBHelper {
         marker.addTo(newMap);
         return marker;
     }
+
+    /**
+     * Set marker value and save in to DB
+     *
+     * @param restaurant
+     * @param marker
+     */
+    static setFavoriteMark(restaurant, marker) {
+        let isFavorite = JSON.parse(marker.getAttribute('aria-checked'));
+
+        isFavorite = !isFavorite;
+
+        DBHelper.constructFavoriteMark(marker, isFavorite);
+        DBHelper.saveFavoriteMark(restaurant.id, isFavorite);
+    }
+
+    static saveFavoriteMark(restaurantId, isFavorite) {
+        fetch(
+            `${DBHelper.DATABASE_URL}/${restaurantId}/?is_favorite=${isFavorite}`,
+            {
+                method: 'PUT'
+            }
+        )
+    }
+
+    /**
+     * Set attributes for favorite marker based on passed value
+     *
+     * @param marker
+     * @param isFavorite
+     */
+    static constructFavoriteMark(marker, isFavorite) {
+        isFavorite = JSON.parse(isFavorite);
+        marker.setAttribute('aria-checked', isFavorite);
+
+        if (isFavorite === true) {
+            marker.className = "fas fa-heart fav-btn";
+        }
+        else {
+            marker.className = "far fa-heart fav-btn";
+        }
+    }
 }
 

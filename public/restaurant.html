@@ -46,7 +46,7 @@
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container" class="vcard">
-        <i role="checkbox" aria-checked="false" aria-label="Is this restaurant your favorite?" class="far fa-heart fav-btn"></i>
+        <i id="restaurant-favorite" tabindex="0" role="checkbox" aria-checked="false" aria-label="Is this restaurant your favorite?" class="far fa-heart fav-btn"></i>
         <h2 id="restaurant-name" class="fn org"></h2>
         <picture id="restaurant-img" class="photo">
         </picture>
@@ -77,14 +77,14 @@
 <!-- Beginning scripts -->
 <script type="text/javascript" src="js/idb.min.js"></script>
 <!-- Database helpers -->
-<script type="text/javascript" src="js/dbhelper.min.js"></script>
+<script type="text/javascript" src="js/dbhelper.js"></script>
 <!-- Helper methods for pictures -->
-<script type="text/javascript" src="js/picturehelper.min.js"></script>
+<script type="text/javascript" src="js/picturehelper.js"></script>
 <!-- Main javascript file -->
-<script type="text/javascript" src="js/restaurant_info.min.js"></script>
+<script type="text/javascript" src="js/restaurant_info.js"></script>
 <!-- register service worker -->
-<script type="text/javascript" src="sw.js"></script>
-<script type="text/javascript" src="service_worker.js"></script>
+<!--<script type="text/javascript" src="sw.js"></script>-->
+<!--<script type="text/javascript" src="service_worker.js"></script>-->
 <!-- End scripts -->
 
 </body>
