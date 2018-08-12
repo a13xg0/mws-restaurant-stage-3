@@ -294,8 +294,6 @@ class DBHelper {
             })
         .then((reviews) => {
             if (reviews && reviews.length > 0) {
-                container.innerHTML = '';
-
                 reviews.forEach(review => {
                     reviewList.appendChild(createReviewHTML(review, restaurantName));
                 });
