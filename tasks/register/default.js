@@ -15,9 +15,10 @@
 module.exports = function (grunt) {
 
 
-  grunt.registerTask('default', [
-    'prepareImages'
-  ]);
-
-
+    grunt.registerTask('default', [
+        'clean:dev',
+        'prepareImages',
+        'cssmin:dist',
+        'uglify'
+    ]);
 };

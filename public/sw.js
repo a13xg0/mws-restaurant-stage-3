@@ -30,12 +30,12 @@ self.addEventListener('install', function (event) {
                 '/manifest.json',
                 '/index.html',
                 '/restaurant.html',
-                '/js/idb.js',
-                '/js/main.js',
-                '/js/dbhelper.js',
-                '/js/picturehelper.js',
-                '/js/restaurant_info.js',
-                '/css/styles.css'
+                '/js/idb.min.js',
+                '/js/main.min.js',
+                '/js/dbhelper.min.js',
+                '/js/picturehelper.min.js',
+                '/js/restaurant_info.min.js',
+                '/css/styles.min.css'
             ]);
         }, function (msg) {
             console.log(msg);
