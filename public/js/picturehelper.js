@@ -34,7 +34,7 @@ class PictureHelper {
         image.className = 'restaurant-img photo';
         image.setAttribute('data-src',DBHelper.imageUrlForRestaurant(restaurantInfo));
         image.src = DBHelper.imageLQUrlForRestaurant(restaurantInfo);
-        image.alt = restaurantInfo.photo_alt;
+        image.alt = restaurantInfo.photo_alt || 'No image available';
         image.title = restaurantInfo.name;
         image.onload = PictureHelper.lazyLoadImage;
 
