@@ -397,6 +397,26 @@ footer {
     cursor: pointer;
 }
 
+.review-form #user-name {
+    font-size: 16pt;
+    width: 100%;
+}
+
+.review-form #user-comment {
+    font-size: 16pt;
+    width: 100%;
+}
+
+.review-form .add-review-button {
+    font-size: 16pt;
+    margin-bottom: 20px;
+}
+
+.five-stars {
+    margin-bottom: 10px;
+    color: #a56900;
+}
+
 /*
   Layout management
  */

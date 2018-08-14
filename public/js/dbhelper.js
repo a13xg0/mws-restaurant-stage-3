@@ -307,5 +307,22 @@ class DBHelper {
             }
         })
     }
+
+    static sendReview(restaurantId, rating, userName, comments) {
+        const review = {
+            restaurant_id: restaurantId,
+            name: userName,
+            rating: rating,
+            comments: comments
+        };
+
+        return fetch(
+            `${DBHelper.DATABASE_URL}/reviews/`,
+            {
+                method: 'POST',
+                body: JSON.stringify(review)
+            }
+        )
+    }
 }
 

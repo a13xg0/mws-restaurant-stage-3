@@ -148,11 +148,13 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 fillReviewsHTML = (reviews = self.restaurant.reviews, restaurantName = self.restaurant.name, restaurantId = self.restaurant.id) => {
     const container = document.getElementById('reviews-container');
-    const title = document.createElement('h3');
-    title.innerHTML = 'Reviews';
-    container.appendChild(title);
+
+    // const title = document.createElement('h3');
+    // title.innerHTML = 'Reviews';
+    // container.appendChild(title);
 
     const ul = document.getElementById('reviews-list');
+    ul.innerHTML = '';
 
     DBHelper.loadReviews(restaurantId, restaurantName, container, ul);
 };
@@ -231,3 +233,32 @@ getParameterByName = (name, url) => {
         return '';
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
+
+sendReview = (restaurant = self.restaurant) => {
+    let rating = 0;
+
+    const selectedButton = document.querySelector('#rating-control .radio[checked=""]');
+    if (selectedButton !== null) {
+        rating = parseInt(selectedButton.dataset.value);
+    }
+
+    DBHelper.sendReview(
+        restaurant.id,
+        rating,
+        document.reviewForm.name.value,
+        document.reviewForm.comments.value
+    )
+        .then(()=>{
+            const form = document.querySelector('[name="reviewForm"]');
+
+            const container = document.getElementById('reviews-container');
+            container.removeChild(form);
+
+            const p = document.createElement('p');
+            p.innerHTML = 'Thank you for your review!';
+            container.insertBefore(p, container.childNodes[0]);
+
+            fillReviewsHTML();
+        });
+};
+
