@@ -28,7 +28,13 @@ class DBHelper {
             let store = upgradeDb.createObjectStore('restaurants', {
                 keyPath: 'id'
             });
-            //store.createIndex('by-date', 'time');
+            store.createIndex('by-sync', 'sync');
+
+            let review = upgradeDb.createObjectStore('reviews', {
+                keyPath: 'id', autoIncrement: true
+            });
+            review.createIndex('by-restaurant', 'restaurant_id');
+            review.createIndex('by-sync', 'sync');
         });
     }
 
@@ -46,6 +52,7 @@ class DBHelper {
 
                 // cache restaurants
                 restaurants.forEach((restaurant) => {
+                    restaurant.sync = 1;
                     DBHelper.storeRestaurantData(restaurant);
                 });
 
@@ -56,6 +63,7 @@ class DBHelper {
                 DBHelper.openDatabase().then((db) => {
                     let tx = db.transaction('restaurants');
                     let store = tx.objectStore('restaurants');
+
                     store.getAll().then((restaurants) => {
                         // successful IndexDB response
                         callback(null, restaurants);
@@ -81,6 +89,7 @@ class DBHelper {
                 }
             })
             .then((restaurant) => {
+                restaurant.sync = 1;
                 DBHelper.storeRestaurantData(restaurant);
                 callback(null, restaurant);
             })
@@ -102,14 +111,12 @@ class DBHelper {
 
     static storeRestaurantData(restaurant) {
         // save restaurant in DB
-        DBHelper.openDatabase().then(function(db) {
+        return DBHelper.openDatabase().then(function(db) {
             if (!db) return;
 
-            var tx = db.transaction('restaurants', 'readwrite');
-            var store = tx.objectStore('restaurants');
-            //messages.forEach(function (message) {
-                store.put(restaurant);
-            //});
+            let tx = db.transaction('restaurants', 'readwrite');
+            let store = tx.objectStore('restaurants');
+            store.put(restaurant);
         })
     }
 
@@ -154,7 +161,7 @@ class DBHelper {
             if (error) {
                 callback(error, null);
             } else {
-                let results = restaurants
+                let results = restaurants;
                 if (cuisine !== 'all') { // filter by cuisine
                     results = results.filter(r => r.cuisine_type === cuisine);
                 }
@@ -255,16 +262,20 @@ class DBHelper {
         isFavorite = !isFavorite;
 
         DBHelper.constructFavoriteMark(marker, isFavorite);
-        DBHelper.saveFavoriteMark(restaurant.id, isFavorite);
+        DBHelper.saveFavoriteMark(restaurant, isFavorite);
     }
 
-    static saveFavoriteMark(restaurantId, isFavorite) {
-        fetch(
-            `${DBHelper.DATABASE_URL}/restaurants/${restaurantId}/?is_favorite=${isFavorite}`,
-            {
-                method: 'PUT'
-            }
-        )
+    static saveFavoriteMark(restaurant, isFavorite) {
+        // todo: register service worker event sync with tag: "restaurant update"
+
+        restaurant.sync = 0;
+        restaurant.is_favorite = isFavorite;
+
+        DBHelper.storeRestaurantData(restaurant).then(() => {
+            navigator.serviceWorker.ready.then(function(swRegistration) {
+                return swRegistration.sync.register('sync-favorites');
+            });
+        });
     }
 
     /**
@@ -285,6 +296,13 @@ class DBHelper {
         }
     }
 
+    /**
+     * Load reviews form remote database and update local cache
+     * @param restaurantId
+     * @param restaurantName
+     * @param container
+     * @param reviewList
+     */
     static loadReviews(restaurantId, restaurantName, container, reviewList) {
         fetch(
             `${DBHelper.DATABASE_URL}/reviews/?restaurant_id=${restaurantId}`
@@ -296,8 +314,9 @@ class DBHelper {
             if (reviews && reviews.length > 0) {
                 reviews.forEach(review => {
                     reviewList.appendChild(createReviewHTML(review, restaurantName));
+                    review.sync = 1;
+                    DBHelper.storeReviewData(review);
                 });
-
                 container.appendChild(reviewList);
             }
             else {
@@ -306,23 +325,67 @@ class DBHelper {
                 container.appendChild(noReviews);
             }
         })
+        .catch((msg) => {
+            // probably network failure, let's try to fetch data from IndexDB
+            DBHelper.openDatabase().then((db) => {
+                let tx = db.transaction('reviews');
+                let store = tx.objectStore('reviews');
+                let idx = store.index('by-restaurant');
+                idx.getAll(parseInt(restaurantId)).then((reviews) => {
+                    // successful IndexDB response
+                    reviews.forEach(review => {
+                        reviewList.appendChild(createReviewHTML(review, restaurantName));
+                    });
+
+                    container.appendChild(reviewList);
+
+                }).catch((msg) => {
+                    const error = (`Request failed. Returned status of ${msg}`);
+                });
+            });
+        })
     }
 
+    /**
+     * Save review data into database
+     * @param review
+     * @return {PromiseLike<T | never> | Promise<T | never>}
+     */
+    static storeReviewData(review) {
+        return DBHelper.openDatabase().then((db) => {
+            let tx = db.transaction('reviews', 'readwrite');
+            let store = tx.objectStore('reviews');
+            store.put(review);
+            return tx.complete;
+        })
+    }
+
+    /**
+     * Fill review structure and initiate saving
+     *
+     * @param restaurantId
+     * @param rating
+     * @param userName
+     * @param comments
+     * @return {PromiseLike<T | never> | Promise<T | never>}
+     */
     static sendReview(restaurantId, rating, userName, comments) {
+        let dt = new Date();
         const review = {
             restaurant_id: restaurantId,
             name: userName,
             rating: rating,
-            comments: comments
+            comments: comments,
+            sync: 0,
+            updatedAt: dt.getTime(),
+            createdAd: dt.getTime()
         };
 
-        return fetch(
-            `${DBHelper.DATABASE_URL}/reviews/`,
-            {
-                method: 'POST',
-                body: JSON.stringify(review)
-            }
-        )
+        return DBHelper.storeReviewData(review).then(()=>{
+            navigator.serviceWorker.ready.then(function(swRegistration) {
+                return swRegistration.sync.register('sync-reviews');
+            });
+        });
     }
 }
 

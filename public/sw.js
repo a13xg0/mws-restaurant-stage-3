@@ -22,9 +22,11 @@ self.addEventListener('install', function (event) {
                 'https://unpkg.com/leaflet@1.3.1/dist/images/marker-shadow.png',
                 '/img/icons-512.png',
                 '/img/icons-192.png',
-                'https://use.fontawesome.com/releases/v5.2.0/css/solid.css',
-                'https://use.fontawesome.com/releases/v5.2.0/css/regular.css',
-                'https://use.fontawesome.com/releases/v5.2.0/css/fontawesome.css'
+                '/css/solid.css',
+                '/css/regular.css',
+                '/css/fontawesome.css',
+                '/webfonts/fa-regular-400.woff2',
+                '/webfonts/fa-solid-900.woff2'
             ]);
 
             // cache critical resources
@@ -36,6 +38,7 @@ self.addEventListener('install', function (event) {
                 '/js/idb.min.js',
                 '/js/main.min.js',
                 '/js/dbhelper.min.js',
+                '/js/radiogroup.min.js',
                 '/js/picturehelper.min.js',
                 '/js/restaurant_info.min.js',
                 '/css/styles.min.css'
@@ -147,3 +150,131 @@ self.addEventListener('message', function (event) {
         self.skipWaiting();
     }
 });
+
+/**
+ * Manage sync event and according the tag it calls appropriate event handler
+ *
+ */
+self.addEventListener('sync', function(event) {
+    if (event.tag === 'sync-reviews') {
+        event.waitUntil(processReviewSync());
+    }
+
+    if (event.tag === 'sync-favorites') {
+        event.waitUntil(processRestaurantSync());
+    }
+});
+
+// these IndexDB functions without promised idb library, because service worker works
+// in the separate context
+/**
+ * Handle sync event for reviews
+ *
+ * @return {Promise<any>}
+ */
+function processReviewSync() {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open('rest2', 1);
+
+        request.onsuccess = function (event) {
+            let db = event.target.result;
+            let transaction = db.transaction(['reviews']);
+            let store = transaction.objectStore('reviews');
+
+            let idx = store.index('by-sync');
+            let req = idx.getAll(IDBKeyRange.only(0));
+
+            req.onsuccess = (event) => {
+                let reviews = event.target.result;
+                reviews.forEach((review) => {
+                    return fetch(
+                        `http://localhost:1337/reviews/`,
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(review)
+                        }).then(() => {
+                            review.sync = 1;
+                            storeReviewData(review);
+                        }).catch((e) => {
+                           reject(e);
+                        });
+                });
+                resolve();
+            };
+
+            req.onerror = () => {reject()};
+        };
+    });
+}
+
+/**
+ * Save review data into indexeddb
+ * @param review
+ */
+function  storeReviewData(review) {
+    let request = indexedDB.open('rest2', 1);
+
+    request.onsuccess = function (event) {
+        let db = event.target.result;
+        let transaction = db.transaction(['reviews'], 'readwrite');
+        let store = transaction.objectStore('reviews');
+
+        store.put(review);
+    };
+}
+
+/**
+ * Handle sync event. Fetch all non-synced restaurants and try to put it in remote server
+ *
+ * @return {Promise<any>}
+ */
+function processRestaurantSync() {
+    return new Promise((resolve, reject) => {
+        let request = indexedDB.open('rest2', 1);
+
+        request.onsuccess = function (event) {
+            let db = event.target.result;
+            let transaction = db.transaction(['restaurants']);
+            let store = transaction.objectStore('restaurants');
+
+            let idx = store.index('by-sync');
+            let req = idx.getAll(IDBKeyRange.only(0));
+
+            req.onsuccess = (event) => {
+                let restaurants = event.target.result;
+                restaurants.forEach((restaurant) => {
+                    return fetch(
+                        `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${restaurant.is_favorite}`,
+                        {
+                            method: 'PUT'
+                        }).then(() => {
+                            restaurant.sync = 1;
+                            storeRestaurantData(restaurant);
+                        }).catch((e) => {
+                            reject(e);
+                        });
+                });
+                resolve();
+            };
+
+            req.onerror = () => {reject()};
+        };
+    });
+}
+
+/**
+ * Save restaurant data into indexeddb
+ *
+ * @param restaurant
+ */
+function  storeRestaurantData(restaurant) {
+    let request = indexedDB.open('rest2', 1);
+
+    request.onsuccess = function (event) {
+        let db = event.target.result;
+        let transaction = db.transaction(['restaurants'], 'readwrite');
+        let store = transaction.objectStore('restaurants');
+
+        store.put(restaurant);
+    };
+}

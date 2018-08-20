@@ -234,7 +234,19 @@ getParameterByName = (name, url) => {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
 
-sendReview = (restaurant = self.restaurant) => {
+/**
+ * Save review
+ *
+ * @param event
+ * @param restaurant
+ * @return {boolean}
+ */
+sendReview = (event, restaurant = self.restaurant) => {
+
+    event = event || window.event;
+    event.returnValue = false;
+    event.preventDefault();
+
     let rating = 0;
 
     const selectedButton = document.querySelector('#rating-control .radio[checked=""]');
@@ -260,5 +272,7 @@ sendReview = (restaurant = self.restaurant) => {
 
             fillReviewsHTML();
         });
+
+    return false;
 };
 
