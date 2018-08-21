@@ -2,6 +2,9 @@
   "generators": {
     "modules": {}
   },
+  "hooks": {
+    "grunt": false
+  },
   "paths": {
     "public": "public"
   }
