@@ -22,11 +22,8 @@ self.addEventListener('install', function (event) {
                 'https://unpkg.com/leaflet@1.3.1/dist/images/marker-shadow.png',
                 '/img/icons-512.png',
                 '/img/icons-192.png',
-                '/css/solid.css',
-                '/css/regular.css',
-                '/css/fontawesome.css',
-                '/webfonts/fa-regular-400.woff2',
-                '/webfonts/fa-solid-900.woff2'
+                '/css/fontello.css',
+                '/webfonts/fontello.woff2'
             ]);
 
             // cache critical resources

@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
           integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
           crossorigin=""/>
-    <link rel="preload" href="/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/webfonts/fontello.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="manifest" href="/manifest.json">
     <title>Restaurant Info</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -45,7 +44,7 @@
     <!-- End map -->
     <!-- Beginning restaurant -->
     <section id="restaurant-container" class="vcard">
-        <i id="restaurant-favorite" tabindex="0" role="checkbox" aria-checked="false" aria-label="Is this restaurant your favorite?" class="far fa-heart fav-btn"></i>
+        <i id="restaurant-favorite" tabindex="0" role="checkbox" aria-checked="false" aria-label="Is this restaurant your favorite?" class="icon-heart-empty fav-btn"></i>
         <h2 id="restaurant-name" class="fn org"></h2>
         <picture id="restaurant-img" class="photo">
         </picture>
@@ -63,11 +62,11 @@
             <p>Leave a review:</p>
             <label id="rating-label" for="rating-control">Pick the rating</label>
             <div id="rating-control" class="five-stars" aria-labelledby="rating-label">
-                <i class="far fa-star radio" aria-label="Rating one" data-value="1"></i>
-                <i class="far fa-star radio" aria-label="Rating two" data-value="2"></i>
-                <i class="far fa-star radio" aria-label="Rating three" data-value="3"></i>
-                <i class="far fa-star radio" aria-label="Rating four" data-value="4"></i>
-                <i class="far fa-star radio" aria-label="Rating five" data-value="5"></i>
+                <i class="icon-star-empty radio" aria-label="Rating one" data-value="1"></i>
+                <i class="icon-star-empty radio" aria-label="Rating two" data-value="2"></i>
+                <i class="icon-star-empty radio" aria-label="Rating three" data-value="3"></i>
+                <i class="icon-star-empty radio" aria-label="Rating four" data-value="4"></i>
+                <i class="icon-star-empty radio" aria-label="Rating five" data-value="5"></i>
             </div>
             <label for="user-name">Your name:</label> <br/>
             <input id="user-name" type="text" name="name"><br/>
@@ -107,7 +106,7 @@
 
 <!-- defer large css file loading-->
 <script>
-    let files = ['css/solid.css', 'css/regular.css', 'css/fontawesome.css'];
+    let files = ['css/fontello.css'];
     files.forEach((f) => {
         let link = document.createElement('link');
         link.rel = 'stylesheet';

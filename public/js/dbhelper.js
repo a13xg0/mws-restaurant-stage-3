@@ -289,10 +289,10 @@ class DBHelper {
         marker.setAttribute('aria-checked', isFavorite);
 
         if (isFavorite === true) {
-            marker.className = "fas fa-heart fav-btn";
+            marker.className = "icon-heart fav-btn";
         }
         else {
-            marker.className = "far fa-heart fav-btn";
+            marker.className = "icon-heart-empty fav-btn";
         }
     }
 

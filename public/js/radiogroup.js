@@ -108,13 +108,13 @@
 
     RadioGroup.prototype.fillStarts = function() {
          this.buttons.forEach((b) => {
-             b.classList.remove('fas');
-             b.classList.add('far');
+             b.classList.remove('icon-star');
+             b.classList.add('icon-star-empty');
          });
 
          for (let i = 0; i <= this.buttons.indexOf(this.focusedButton); i ++) {
-             this.buttons[i].classList.remove('far');
-             this.buttons[i].classList.add('fas');
+             this.buttons[i].classList.remove('icon-star-empty');
+             this.buttons[i].classList.add('icon-star');
          }
     };
 
