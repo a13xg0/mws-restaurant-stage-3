@@ -1,3 +1,12 @@
+For UDACITY reviewers:
+
+ - checkout the project
+ - go to inside repository
+ - run `npm install`
+ - run `node server`
+ - open http://localhpst:1337/ in your browser
+
+
 # Local Development API Server
 ## Usage
 #### Get Restaurants
@@ -12,7 +21,7 @@ curl "http://localhost:1337/restaurants/{3}"
 ## Architecture
 Local server
 - Node.js
-- Sails.js
+- Sails.js§
 
 ## Contributors
 
