@@ -4,7 +4,7 @@ For UDACITY reviewers:
  - go to inside repository
  - run `npm install`
  - run `node server`
- - open http://localhpst:1337/ in your browser
+ - open http://localhost:1337/ in your browser
 
 
 # Local Development API Server
